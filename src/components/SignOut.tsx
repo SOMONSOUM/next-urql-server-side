@@ -15,7 +15,7 @@ export default function SignOut() {
   return (
     <form action={onSubmit}>
       <Button className="w-full flex items-center gap-2" variant="destructive">
-        SignOut <LogOut size={20} />
+        SignOut <LogOut size={20} className={cn({ hidden: isPending })} />
         <Loader className={cn("animate-spin", { hidden: !isPending })} />
       </Button>
     </form>

@@ -3,6 +3,7 @@ import NavLinks from "./NavLinks";
 
 import { cn } from "@/src/lib/utils";
 import SignOut from "./SignOut";
+import Image from "next/image";
 
 export default function SideNav() {
   return <SideBar className=" hidden lg:block dark:bg-graident-dark flex-1" />;
@@ -18,7 +19,19 @@ export const SideBar = ({ className }: { className?: string }) => {
       >
         <div className="flex-1 space-y-5">
           <div className="flex items-center gap-2 flex-1">
-            <h1 className="text-3xl font-bold">Daily Todo</h1>
+            <div className="flex flex-col">
+              <Image
+                className="admin-sidebar-logo"
+                src="/circle-logo-moc.png"
+                width={80}
+                height={80}
+                alt=""
+              />
+              <p className="admin-sidebar-logo-title-kh">ក្រសួងពាណិជ្ជកម្ម</p>
+              <p className="admin-sidebar-logo-title-en">
+                Ministry Of Commerce
+              </p>
+            </div>
           </div>
           <NavLinks />
         </div>

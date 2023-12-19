@@ -1,3 +1,5 @@
+"use server";
+
 import { cacheExchange, createClient, fetchExchange } from "@urql/core";
 import { registerUrql } from "@urql/next/rsc";
 import { cookies } from "next/headers";

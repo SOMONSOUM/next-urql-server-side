@@ -18,8 +18,12 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginInput, UserSchema } from "@/src/schema";
 import { useRouter } from "next/navigation";
+import { cn } from "@/src/lib";
+import { Loader, Mail } from "lucide-react";
+import { PasswordInput } from "@/src/components/PasswordInput";
 
 export const LoginScreen: React.FC = () => {
+  const [isPending, startTransition] = React.useTransition();
   const {
     register,
     handleSubmit,
@@ -31,21 +35,17 @@ export const LoginScreen: React.FC = () => {
   const router = useRouter();
 
   const onSubmit: SubmitHandler<LoginInput> = async (input) => {
-    const { token, error } = await onLoginSubmit(input);
-
-    if (token) {
-      toast.success("Signed in successfully", {
-        duration: 2000,
-      });
-      setTimeout(() => {
+    startTransition(async () => {
+      const { token, error } = await onLoginSubmit(input);
+      if (token) {
+        toast.success("Signed in successfully");
         router.push("/admin");
-      }, 1500);
-    } else if (error) {
-      toast.error(error, {
-        icon: "🔥",
-      });
-    }
+      } else if (error) {
+        toast.error(error);
+      }
+    });
   };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
       <Toaster />
@@ -59,24 +59,41 @@ export const LoginScreen: React.FC = () => {
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  placeholder="Enter your name"
-                  type="email"
-                  {...register("email")}
-                />
-                {errors && (
-                  <p className="text-red-500 italic text-xs">
-                    {errors?.email?.message}
-                  </p>
-                )}
+                <div className="relative">
+                  <span className="absolute start-0 flex h-10 items-center px-3 text-muted-foreground">
+                    <Mail size={20} />
+                  </span>
+                  <Input
+                    id="email"
+                    placeholder="Enter your name"
+                    type="email"
+                    className={cn(
+                      "px-10 text-slate-600",
+                      `${
+                        errors?.email
+                          ? "border-red-400 focus:ring-1 focus:ring-red-400"
+                          : ""
+                      }`
+                    )}
+                    {...register("email")}
+                  />
+                  {errors && (
+                    <p className="text-red-500 italic text-xs">
+                      {errors?.email?.message}
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  placeholder="Enter your password"
-                  type="password"
+                <PasswordInput
+                  className={cn(
+                    `${
+                      errors?.password
+                        ? "border-red-400 focus:ring-1 focus:ring-red-400"
+                        : ""
+                    }`
+                  )}
                   {...register("password")}
                 />
                 {errors && (
@@ -87,9 +104,11 @@ export const LoginScreen: React.FC = () => {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="destructive">Cancel</Button>
-            <Button>Login</Button>
+          <CardFooter className="flex justify-between float-right">
+            <Button>
+              Login{" "}
+              <Loader className={cn("animate-spin", { hidden: !isPending })} />
+            </Button>
           </CardFooter>
         </form>
       </Card>

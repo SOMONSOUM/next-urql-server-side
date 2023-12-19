@@ -38,6 +38,7 @@ export type AdminContactList = {
 export type AdminProduct = {
   categories?: Maybe<Array<Maybe<Category>>>;
   city_or_province?: Maybe<Scalars['String']['output']>;
+  commented?: Maybe<Scalars['String']['output']>;
   created_at?: Maybe<Scalars['String']['output']>;
   created_by?: Maybe<ProductDetailOwner>;
   discount?: Maybe<Scalars['String']['output']>;
@@ -187,6 +188,7 @@ export type AppCategoryNested = {
 export type AppProduct = {
   categories?: Maybe<Array<Maybe<Category>>>;
   city_or_province?: Maybe<Scalars['String']['output']>;
+  commented?: Maybe<Scalars['String']['output']>;
   created_at?: Maybe<Scalars['String']['output']>;
   created_by?: Maybe<ProductDetailOwner>;
   discount?: Maybe<Scalars['String']['output']>;
@@ -376,6 +378,12 @@ export type Dashboard = {
   total_users_rejected?: Maybe<Scalars['Int']['output']>;
 };
 
+export enum EditMeEnum {
+  Approved = 'APPROVED',
+  Inreview = 'INREVIEW',
+  Rejected = 'REJECTED'
+}
+
 export type ForgotPasswordUserInput = {
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
 };
@@ -439,7 +447,10 @@ export type Mutation = {
   adminUpdateProduct?: Maybe<Ok>;
   adminUpdateProductStatus?: Maybe<Ok>;
   adminUpdateRole?: Maybe<Ok>;
+  adminUpdateUserRegistationStatus?: Maybe<Ok>;
+  adminUpdateUserRegistationVerify?: Maybe<Ok>;
   adminUpdateUserRegistration?: Maybe<Ok>;
+  adminUpdateUserRegistrationEdit?: Maybe<Ok>;
   adminUpdateUsersBusinessStatus?: Maybe<Ok>;
   adminUserBusinessUpdateStatus?: Maybe<Ok>;
   adminUserIndividualUpdateStatus?: Maybe<Ok>;
@@ -540,7 +551,25 @@ export type MutationAdminUpdateRoleArgs = {
 };
 
 
+export type MutationAdminUpdateUserRegistationStatusArgs = {
+  id: Scalars['Int']['input'];
+  status?: InputMaybe<UserStatus>;
+};
+
+
+export type MutationAdminUpdateUserRegistationVerifyArgs = {
+  id: Scalars['Int']['input'];
+  verified: Scalars['Int']['input'];
+};
+
+
 export type MutationAdminUpdateUserRegistrationArgs = {
+  id: Scalars['Int']['input'];
+  input?: InputMaybe<UserRegistrationInput>;
+};
+
+
+export type MutationAdminUpdateUserRegistrationEditArgs = {
   id: Scalars['Int']['input'];
   input?: InputMaybe<UserRegistrationInput>;
 };
@@ -743,6 +772,7 @@ export type ProductDetailOwner = {
 export type ProductInput = {
   category_id?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
   city_or_province?: InputMaybe<Scalars['String']['input']>;
+  commented?: InputMaybe<Scalars['String']['input']>;
   discount?: InputMaybe<Scalars['String']['input']>;
   group_or_village?: InputMaybe<Scalars['String']['input']>;
   khan_or_district?: InputMaybe<Scalars['String']['input']>;
@@ -756,8 +786,8 @@ export type ProductInput = {
 export enum ProductStatusEnum {
   Approved = 'APPROVED',
   Inreview = 'INREVIEW',
-  Pending = 'PENDING',
-  Rejected = 'REJECTED'
+  Rejected = 'REJECTED',
+  Returned = 'RETURNED'
 }
 
 export type ProductViewCountsInput = {
@@ -783,7 +813,11 @@ export type Query = {
   adminUserList?: Maybe<AdminUserList>;
   adminUserListByPlanType?: Maybe<AdminUserList>;
   adminUserRegistrationDetail?: Maybe<UserRegistration>;
+  adminUserRegistrationEditDetail?: Maybe<UserRegistration>;
+  adminUserRegistrationEditList?: Maybe<AdminUserRegistrationList>;
   adminUserRegistrationList?: Maybe<AdminUserRegistrationList>;
+  adminUserRegistrationVerifyFalse?: Maybe<AdminUserRegistrationList>;
+  adminUserRegistrationVerifyTrue?: Maybe<AdminUserRegistrationList>;
   adminUsersBusinessDetail?: Maybe<AdminUsersBusinessDetail>;
   adminUsersBusinessList?: Maybe<AdminUsersBusinessList>;
   appCategoryList?: Maybe<AppCategoryList>;
@@ -795,8 +829,9 @@ export type Query = {
   appProductActiveList?: Maybe<AppProductList>;
   appProductDetail?: Maybe<AppProduct>;
   appProductInactiveList?: Maybe<AppProductList>;
+  appProductInreviewList?: Maybe<AppProductList>;
   appProductList?: Maybe<AppProductList>;
-  appProductPendingList?: Maybe<AppProductList>;
+  appProductReturnedList?: Maybe<AppProductList>;
   appRelatedProductList?: Maybe<AppProductList>;
   appShopDetail?: Maybe<Shop>;
   appShopList?: Maybe<AppShopList>;
@@ -884,7 +919,30 @@ export type QueryAdminUserRegistrationDetailArgs = {
 };
 
 
+export type QueryAdminUserRegistrationEditDetailArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryAdminUserRegistrationEditListArgs = {
+  filter?: InputMaybe<UserRegistrationFilter>;
+  paginationInput?: InputMaybe<PaginationInput>;
+};
+
+
 export type QueryAdminUserRegistrationListArgs = {
+  filter?: InputMaybe<UserRegistrationFilter>;
+  paginationInput?: InputMaybe<PaginationInput>;
+};
+
+
+export type QueryAdminUserRegistrationVerifyFalseArgs = {
+  filter?: InputMaybe<UserRegistrationFilter>;
+  paginationInput?: InputMaybe<PaginationInput>;
+};
+
+
+export type QueryAdminUserRegistrationVerifyTrueArgs = {
   filter?: InputMaybe<UserRegistrationFilter>;
   paginationInput?: InputMaybe<PaginationInput>;
 };
@@ -931,13 +989,18 @@ export type QueryAppProductInactiveListArgs = {
 };
 
 
+export type QueryAppProductInreviewListArgs = {
+  paginationInput?: InputMaybe<PaginationInput>;
+};
+
+
 export type QueryAppProductListArgs = {
   filter?: InputMaybe<AppProductFilter>;
   paginationInput?: InputMaybe<PaginationInput>;
 };
 
 
-export type QueryAppProductPendingListArgs = {
+export type QueryAppProductReturnedListArgs = {
   paginationInput?: InputMaybe<PaginationInput>;
 };
 
@@ -1065,6 +1128,8 @@ export type UploadImageResponse = {
 };
 
 export type User = {
+  commented?: Maybe<Scalars['String']['output']>;
+  editStatus?: Maybe<EditMeEnum>;
   email?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
@@ -1110,6 +1175,7 @@ export type UserLoginInput = {
 };
 
 export type UserRegistration = {
+  commented?: Maybe<Scalars['String']['output']>;
   created_at?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   first_name?: Maybe<Scalars['String']['output']>;
@@ -1120,6 +1186,7 @@ export type UserRegistration = {
   status?: Maybe<UserStatus>;
   updated_at?: Maybe<Scalars['String']['output']>;
   user_profile?: Maybe<Scalars['String']['output']>;
+  verified?: Maybe<Scalars['Int']['output']>;
 };
 
 export type UserRegistrationFilter = {
@@ -1128,6 +1195,7 @@ export type UserRegistrationFilter = {
 };
 
 export type UserRegistrationInput = {
+  commented?: InputMaybe<Scalars['String']['input']>;
   confirm_password?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   first_name?: InputMaybe<Scalars['String']['input']>;
@@ -1141,15 +1209,14 @@ export type UserRegistrationInput = {
 export enum UserStatus {
   Approved = 'APPROVED',
   Inreview = 'INREVIEW',
-  Pending = 'PENDING',
   Rejected = 'REJECTED'
 }
 
 export enum UsersBusinessEnum {
   Approved = 'APPROVED',
   Inreview = 'INREVIEW',
-  Pending = 'PENDING',
-  Rejected = 'REJECTED'
+  Rejected = 'REJECTED',
+  Returned = 'RETURNED'
 }
 
 export type VerifyOtpUserInput = {

@@ -2,7 +2,7 @@
 
 import { Button } from "@/src/components/ui/button";
 import React from "react";
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { Menu } from "lucide-react";
 export default function ToggleSidebar() {
   return (
     <Button
@@ -10,7 +10,7 @@ export default function ToggleSidebar() {
       className="block lg:hidden"
       onClick={() => document.getElementById("toggle-sidebar")?.click()}
     >
-      <HamburgerMenuIcon />
+      <Menu />
     </Button>
   );
 }
